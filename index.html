@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة تسجيل البيانات الرسمية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            --accent-color: #fbbf24; /* لون ذهبي فخم */
+            --text-light: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--primary-gradient);
+            background-attachment: fixed;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .main-card {
+            background: var(--glass-bg);
+            padding: 3rem;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 550px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .header-section h1 {
+            color: #1e293b;
+            font-weight: 800;
+            font-size: 2rem;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .header-section p {
+            color: #64748b;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .divider {
+            height: 4px;
+            width: 60px;
+            background: var(--accent-color);
+            margin: 1rem auto;
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.7rem;
+            font-weight: 700;
+            color: #334155;
+            font-size: 0.95rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 1rem;
+            font-size: 1rem;
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #fcfcfc;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.15);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1.2rem;
+            background: #1e293b;
+            color: var(--accent-color);
+            border: none;
+            border-radius: 1rem;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-submit:hover {
+            background: #0f172a;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .hidden { display: none; }
+
+        #response-msg {
+            margin-top: 1.5rem;
+            text-align: center;
+            padding: 1.2rem;
+            border-radius: 1rem;
+            display: none;
+            font-weight: 700;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; scale: 0.9; }
+            to { opacity: 1; scale: 1; }
+        }
+
+        .success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+        /* Loader */
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(251, 191, 36, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="header-section">
+        <h1>بوابة تسجيل البيانات</h1>
+        <div class="divider"></div>
+        <p>يرجى إكمال الحقول التالية بدقة وعناية</p>
+    </div>
+
+    <form id="proForm">
+        <div class="form-group">
+            <label>الاسم الثلاثي الكامل</label>
+            <input type="text" name="fullName" placeholder="مثال: محمد أحمد علي" required>
+        </div>
+
+        <div class="form-group">
+            <label>هل تملك رقم عسكري؟</label>
+            <select name="hasMilitaryId" id="milSelect" onchange="toggleMil()">
+                <option value="لا يوجد">لا يوجد</option>
+                <option value="نعم">نعم</option>
+            </select>
+        </div>
+
+        <div id="milInputGroup" class="form-group hidden">
+            <label>الرقم العسكري</label>
+            <input type="text" name="militaryId" id="milInput" placeholder="أدخل الرقم العسكري الرسمي">
+        </div>
+
+        <div class="form-group">
+            <label>المسمى الوظيفي (جهة العمل)</label>
+            <input type="text" name="jobTitle" placeholder="مثال: مهندس برمجيات" required>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn-submit">
+            <span id="btnText">إرسال البيانات الرسمية</span>
+            <div id="loader" class="spinner hidden"></div>
+        </button>
+    </form>
+
+    <div id="response-msg"></div>
+</div>
+
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwoehGLHI3RgUGkEZrzuhthQeLEPkBrUixLcy-ORw5Lw5fJhW5jfpltzPoD36Y-mztOLw/exec';
+
+    function toggleMil() {
+        const select = document.getElementById('milSelect');
+        const group = document.getElementById('milInputGroup');
+        const input = document.getElementById('milInput');
+        if (select.value === 'نعم') {
+            group.classList.remove('hidden');
+            input.required = true;
+        } else {
+            group.classList.add('hidden');
+            input.required = false;
+        }
+    }
+
+    const form = document.getElementById('proForm');
+    const btn = document.getElementById('submitBtn');
+    const msg = document.getElementById('response-msg');
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        btn.disabled = true;
+        document.getElementById('btnText').innerText = 'جاري المعالجة...';
+        document.getElementById('loader').classList.remove('hidden');
+        msg.style.display = 'none';
+
+        fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+            .then(res => {
+                btn.disabled = false;
+                document.getElementById('btnText').innerText = 'إرسال البيانات الرسمية';
+                document.getElementById('loader').classList.add('hidden');
+                msg.innerHTML = '✅ تم استلام بياناتك بنجاح في السجلات الرسمية.';
+                msg.className = 'success';
+                msg.style.display = 'block';
+                form.reset();
+                toggleMil();
+            })
+            .catch(err => {
+                btn.disabled = false;
+                document.getElementById('btnText').innerText = 'إرسال البيانات الرسمية';
+                document.getElementById('loader').classList.add('hidden');
+                msg.innerHTML = '❌ حدث خطأ في الاتصال، حاول مرة أخرى.';
+                msg.className = 'error';
+                msg.style.display = 'block';
+            });
+    });
+</script>
+
+</body>
+</html>
